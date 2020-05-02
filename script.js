@@ -2,11 +2,19 @@ const parse = require('bash-parser');
 var assert = require('assert');
 
 const livyMappings = {
-    "--queue": "queue",
     "--class": "className",
     "--jars": "jars",
     "--py-files": "pyFiles",
-    "--files": "files" 
+    "--files": "files",
+    "--driver-memory": "driverMemory",
+    "--driver-cores": "driverCores",
+    "--executor-memory": "executorMemory",
+    "--executor-cores": "executorCores",
+    "--num-executors": "numExecutors",
+    "--archives": "archives",
+    "--queue": "queue",
+    "--name": "name",
+    "--conf": "conf"
 }
 
 class Livy {
@@ -42,11 +50,28 @@ class Livy {
         }
         this[propertyName].push(propertyValue);
     }
+
+    setMapProperty(propertyName, propertyKey, propertyValue) {
+        if (!propertyValue) {
+            return
+        }
+        this[propertyName][propertyKey] = correctDataType(propertyValue);
+    }
 }
 
-function getJsonStringFromCommand(shellCommand) {
-    let ast = parse(shellCommand, {mode: 'bash'});
-    return JSON.stringify(ast, null, 2);
+function correctDataType(inputData) {
+    switch(inputData) {
+        case "true":
+            return true;
+        case "false":
+            return false;
+        default:
+            if (!isNaN(inputData)) {
+                return +inputData;
+            }
+
+            return inputData;
+    }
 }
 
 function getJsonObjectFromCommand(shellCommand) {
@@ -55,22 +80,39 @@ function getJsonObjectFromCommand(shellCommand) {
 }
 
 function populateLivyObject(livyObject, paramArray) {
-    for (i = 0; i < paramArray.length;) {
+    let paramLength = paramArray.length;
+    for (i = 0; i < paramLength;) {
         let param = paramArray[i];
         
         switch(param.text) {
-            case "--queue":
             case "--class":
+            case "--driver-memory":
+            case "--driver-cores":
+            case "--executor-memory":
+            case "--executor-cores":
+            case "--num-executors":
+            case "--queue":
+            case "--name":
                 livyObject.setPrimitiveProperty(livyMappings[param.text], paramArray[++i].text);
                 break;
             case "--jars":
             case "--py-files":
             case "--files":
                 i++;
-                while (!paramArray[i].text.startsWith("--")) {
+                while (i < paramLength && !paramArray[i].text.startsWith("--")) {
                     let csv = paramArray[i++].text;
                     for (let v of csv.split(",")) {
                         livyObject.setArrayProperty(livyMappings[param.text], v);
+                    }
+                }
+                break;
+            case "--conf":
+                i++;
+                while (i < paramLength && !paramArray[i].text.startsWith("--")) {
+                    let csv = paramArray[i++].text;
+                    for (let v of csv.split(",")) {
+                        let [key, value] = v.split("=");
+                        livyObject.setMapProperty(livyMappings[param.text], key, value);
                     }
                 }
                 break;
@@ -93,7 +135,7 @@ function parseCommand(commands) {
     let livyObject = new Livy();
     livyObject = populateLivyObject(livyObject, suffixArray);
     return JSON.stringify(livyObject, (key, value) => {
-        if (value !== null && value.length != 0 && Object.keys(value).length !== 0) return value
+        if (value !== null && ((typeof value === "string" && value.length != 0) || (typeof value == "object" && Object.keys(value).length !== 0) || (typeof value == "boolean" || typeof value == "number"))) return value
     }, 2);
 }
 
