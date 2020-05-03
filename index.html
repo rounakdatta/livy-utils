@@ -1,0 +1,68 @@
+<html>
+    <head>
+        <title>Spark Submit to Livy Converter</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.32.0/codemirror.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://codemirror.net/2/mode/javascript/javascript.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.32.0/codemirror.min.css" />
+        <script src="scriptBundle.js"></script>
+        <script src="livy-json-validatorBundle.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Spark Submit to Livy Converter</h1>
+            <br>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <textarea id="sparkSubmitCommand" class="form-control" rows="10"></textarea>
+                </div>
+                <div class="col-md-6">
+                    <textarea id="livyJson" class="form-control" rows="10"></textarea>
+                    <center>
+                        <br>
+                        <button style="display: none;" type="button" id="livyValidationButton" class="btn btn-warning" onclick="validateLivy();">Validate Livy</button>
+                        <div id="livyValidationResults"></div>
+                    </center>
+                </div>
+            </div>
+
+            <br>
+            <center><button type="button" class="btn btn-default" onclick="initConversion();">Convert</button></center>
+    
+        </div>
+    </body>
+
+    <script>
+        var livyTextArea = document.getElementById("livyJson");
+        var editorLivy = CodeMirror.fromTextArea(livyTextArea, {
+          lineNumbers: true,
+          mode: "javascript",
+          json: true,
+          indentWithTabs: true
+        });
+
+        var sparkSubmitTextArea = document.getElementById("sparkSubmitCommand");
+        var editorCommand = CodeMirror.fromTextArea(sparkSubmitTextArea, {
+          lineNumbers: true,
+          mode: "shell",
+          indentWithTabs: true,
+          lineWrapping: true
+        });
+
+        function initConversion() {
+            let shellCommand = editorCommand.getValue();
+            makeConversion(shellCommand, editorLivy);
+            document.getElementById("livyValidationButton").style.display = "block";
+        }
+
+        function validateLivy() {
+            let livyJson = editorLivy.getValue();
+            test(livyJson);
+        }
+
+      </script>
+
+</html>

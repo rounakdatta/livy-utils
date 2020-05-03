@@ -84,13 +84,17 @@ var schema = {
 }
 
 var validate = ajv.compile(schema);
-  
-let payload = '{ "className": "com.example.ClassDriver", "jars": [ "deequ-1.0.2.jar", "myapp-assembly-1.3.jar", "jackson.jar" ], "executorMemory": "4k", "files": [ "payload_data.json" ], "queue": "sandbox", "conf": { "spark.shuffle.service.enabled": true, "spark.yarn.maxAppAttempts": 1, "spark.dynamicAllocation.enabled": true, "spark.dynamicAllocation.minExecutors": 1, "spark.dynamicAllocation.maxExecutors": 100, "spark.yarn.am.nodeLabelExpression": "etl_label" } }'
-test(payload);
 
 function test(JsonData) {
     let data = JSON.parse(JsonData);
     var valid = validate(data);
-    if (valid) console.log('Valid!');
-    else console.log('Invalid: ' + ajv.errorsText(validate.errors));
+
+    let validationResults = "Valid!";
+    if (!valid) {
+        validationResults = 'Invalid: ' + ajv.errorsText(validate.errors);
+    }
+
+    document.getElementById("livyValidationResults").innerText = validationResults;
 }
+
+window.test = test;

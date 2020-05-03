@@ -1,0 +1,19 @@
+{
+  "name": "livy-utils",
+  "version": "1.0.0",
+  "description": "Spark submit command to Livy Converter",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rounakdatta/livy-utils.git"
+  },
+  "author": "Rounak Datta",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rounakdatta/livy-utils/issues"
+  },
+  "homepage": "https://github.com/rounakdatta/livy-utils#readme"
+}

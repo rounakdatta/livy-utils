@@ -143,14 +143,20 @@ function parseCommand(commands) {
 
     let livyObject = new Livy();
     livyObject = populateLivyObject(livyObject, suffixArray);
-    return JSON.stringify(livyObject, (key, value) => {
-        if (value !== null && ((typeof value === "string" && value.length != 0) || (typeof value == "object" && Object.keys(value).length !== 0) || (typeof value == "boolean" || typeof value == "number"))) return value
+    return JSON.stringify(livyObject, (_, value) => {
+        if (value !== null && ((typeof value === "string" && value.length !== 0) || (typeof value === "object" && Object.keys(value).length !== 0) || (typeof value === "boolean" || typeof value === "number"))) return value
     }, 2);
 }
 
-let shellCommand = 'SPARK_MAJOR_VERSION=2 HADOOP_USER_NAME=admin spark-submit --queue sandbox  --class com.example.ClassDriver   --jars deequ-1.0.2.jar,myapp-assembly-1.3.jar, jackson.jar  --files payload_data.json --conf spark.shuffle.service.enabled=true --conf spark.yarn.maxAppAttempts=1 --conf spark.dynamicAllocation.enabled=true --conf spark.dynamicAllocation.minExecutors=1 --conf spark.dynamicAllocation.maxExecutors=100 --conf spark.yarn.am.nodeLabelExpression=etl_label  myapp-assembly-1.3.jar payload_data payload_data.json "{\"personal_info\":{} }" "{ \"official_info\": {} }"'
-let jsonObject = getJsonObjectFromCommand(shellCommand);
+function makeConversion(shellCommand, editorLivy) {
+    let jsonObject = getJsonObjectFromCommand(shellCommand);
 
-let commandArray = jsonObject.commands;
-let outputJson = parseCommand(commandArray);
-console.log(outputJson);
+    let commandArray = jsonObject.commands;
+    let outputJson = parseCommand(commandArray);
+    editorLivy.getDoc().setValue(outputJson);
+}
+
+window.makeConversion = makeConversion;
+
+// let shellCommand = 'SPARK_MAJOR_VERSION=2 HADOOP_USER_NAME=admin spark-submit --queue sandbox  --class com.example.ClassDriver   --jars deequ-1.0.2.jar,myapp-assembly-1.3.jar, jackson.jar  --files payload_data.json --conf spark.shuffle.service.enabled=true --conf spark.yarn.maxAppAttempts=1 --conf spark.dynamicAllocation.enabled=true --conf spark.dynamicAllocation.minExecutors=1 --conf spark.dynamicAllocation.maxExecutors=100 --conf spark.yarn.am.nodeLabelExpression=etl_label  myapp-assembly-1.3.jar payload_data payload_data.json "{\"personal_info\":{} }" "{ \"official_info\": {} }"'
+// console.log(makeConversion(shellCommand));
