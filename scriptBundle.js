@@ -3898,7 +3898,7 @@ function makeConversion(shellCommand, editorLivy) {
 
 window.makeConversion = makeConversion;
 
-// let shellCommand = 'SPARK_MAJOR_VERSION=2 HADOOP_USER_NAME=admin spark-submit --queue sandbox  --class com.example.ClassDriver   --jars deequ-1.0.2.jar,myapp-assembly-1.3.jar, jackson.jar  --files payload_data.json --conf spark.shuffle.service.enabled=true --conf spark.yarn.maxAppAttempts=1 --conf spark.dynamicAllocation.enabled=true --conf spark.dynamicAllocation.minExecutors=1 --conf spark.dynamicAllocation.maxExecutors=100 --conf spark.yarn.am.nodeLabelExpression=etl_label  myapp-assembly-1.3.jar payload_data payload_data.json "{\"personal_info\":{} }" "{ \"official_info\": {} }"'
+// let shellCommand = 'SPARK_MAJOR_VERSION=2 HADOOP_USER_NAME=admin spark-submit --queue sandbox  --class com.hotstar.dexter.driver.HiveDriver   --jars deequ-1.0.2.jar,data-dexter-assembly-1.3.jar, jackson.jar  --files in_cms.tv_show_update_s3.json --conf spark.shuffle.service.enabled=true --conf spark.yarn.maxAppAttempts=1 --conf spark.dynamicAllocation.enabled=true --conf spark.dynamicAllocation.minExecutors=1 --conf spark.dynamicAllocation.maxExecutors=100 --conf spark.yarn.am.nodeLabelExpression=dataplat_etl  data-dexter-assembly-1.3.jar in_cms.tv_show_update_s3 in_cms.tv_show_update_s3.json "{\"partition_info\":{} }" "{ \"dimensions\": {} }"'
 // console.log(makeConversion(shellCommand));
 },{"assert":2,"bash-parser":22}],13:[function(require,module,exports){
 module.exports = function(fn) {
