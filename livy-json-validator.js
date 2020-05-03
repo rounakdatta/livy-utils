@@ -1,5 +1,5 @@
 const Ajv = require('ajv');
-const ajv = new Ajv({allErrors: true});
+const ajv = new Ajv({allErrors: true, $data: true});
 
 var schemaOld = {
     "properties": {
@@ -66,6 +66,17 @@ var schema = {
             "then": {
                 "dependencies": {
                     "spark.dynamicAllocation.enabled": ["spark.shuffle.service.enabled"]
+                },
+                "properties": {
+                    "spark.dynamicAllocation.minExecutors": {
+                        "type": "number",
+                        "maximum": {
+                            "$data": "1/spark.dynamicAllocation.maxExecutors"
+                        }
+                    },
+                    "spark.dynamicAllocation.maxExecutors": {
+                        "type": "number"
+                    }
                 }
             }
         }

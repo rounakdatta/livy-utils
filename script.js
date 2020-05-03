@@ -3,6 +3,7 @@ var assert = require('assert');
 
 const livyMappings = {
     "--class": "className",
+    "args": "args",
     "--jars": "jars",
     "--py-files": "pyFiles",
     "--files": "files",
@@ -22,6 +23,7 @@ class Livy {
         this.kind = null;
         this.proxyUser = null;
         this.className = null;
+        this.args = [];
         this.jars = [];
         this.pyFiles = [];
         this.files = [];
@@ -108,7 +110,7 @@ function populateLivyObject(livyObject, paramArray) {
                 break;
             case "--conf":
                 i++;
-                while (i < paramLength && !paramArray[i].text.startsWith("--")) {
+                while (i < paramLength && !paramArray[i].text.startsWith("--") && !paramArray[i].text.toLowerCase().endsWith(".jar")) {
                     let csv = paramArray[i++].text;
                     for (let v of csv.split(",")) {
                         let [key, value] = v.split("=");
@@ -117,7 +119,14 @@ function populateLivyObject(livyObject, paramArray) {
                 }
                 break;
             default:
-                i++;
+                if (param.text.toLowerCase().endsWith(".jar")) {
+                    while (++i < paramLength) {
+                        let arg = paramArray[i].text;
+                        livyObject.setArrayProperty(livyMappings["args"], arg);
+                    }
+                } else {
+                    i++;
+                }
         }
     }
 
